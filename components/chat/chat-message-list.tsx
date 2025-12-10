@@ -1,26 +1,33 @@
 "use client"
 
+import type { UIMessage } from "ai"
 import {
   Conversation,
   ConversationContent,
   ConversationScrollButton,
 } from "@/components/ai-elements/conversation"
 import { ChatMessageItem } from "./chat-message-item"
-import type { MessageType } from "./types"
 
 type ChatMessageListProps = {
-  messages: MessageType[]
+  messages: UIMessage[]
+  onToolApproval: (toolCallId: string, toolName: string, approved: boolean) => void
+  toolsRequiringConfirmation: string[]
 }
 
-export function ChatMessageList({ messages }: ChatMessageListProps) {
+export function ChatMessageList({
+  messages,
+  onToolApproval,
+  toolsRequiringConfirmation,
+}: ChatMessageListProps) {
   return (
     <Conversation className="min-h-0 flex-1">
       <ConversationContent className="pb-4">
-        {messages.map(({ versions, ...message }) => (
+        {messages.map((message) => (
           <ChatMessageItem
-            key={message.key}
+            key={message.id}
             message={message}
-            versions={versions}
+            onToolApproval={onToolApproval}
+            toolsRequiringConfirmation={toolsRequiringConfirmation}
           />
         ))}
       </ConversationContent>
@@ -28,4 +35,3 @@ export function ChatMessageList({ messages }: ChatMessageListProps) {
     </Conversation>
   )
 }
-

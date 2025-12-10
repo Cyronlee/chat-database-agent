@@ -29,12 +29,21 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { ChatModelSelector } from "./chat-model-selector"
 import { models } from "./constants"
+import { cn } from "@/lib/utils"
 
 type ChatInputProps = {
   onSubmit: (message: PromptInputMessage) => void
+  disabled?: boolean
+  isThinkingEnabled?: boolean
+  onThinkingToggle?: (enabled: boolean) => void
 }
 
-export function ChatInput({ onSubmit }: ChatInputProps) {
+export function ChatInput({
+  onSubmit,
+  disabled = false,
+  isThinkingEnabled = true,
+  onThinkingToggle,
+}: ChatInputProps) {
   const [model, setModel] = useState<string>(models[0].id)
   const [modelSelectorOpen, setModelSelectorOpen] = useState(false)
   const [text, setText] = useState<string>("")
@@ -68,8 +77,9 @@ export function ChatInput({ onSubmit }: ChatInputProps) {
         <PromptInputTextarea
           className="px-5 md:text-base"
           onChange={(event) => setText(event.target.value)}
-          placeholder="How can Grok help?"
+          placeholder="How can I help?"
           value={text}
+          disabled={disabled}
         />
         <PromptInputFooter className="p-2.5">
           <PromptInputTools>
@@ -78,6 +88,7 @@ export function ChatInput({ onSubmit }: ChatInputProps) {
                 <PromptInputButton
                   className="!rounded-full border text-foreground"
                   variant="outline"
+                  disabled={disabled}
                 >
                   <PaperclipIcon size={16} />
                   <span className="sr-only">Attach</span>
@@ -115,6 +126,7 @@ export function ChatInput({ onSubmit }: ChatInputProps) {
                 className="!rounded-l-full text-foreground"
                 onClick={() => setUseWebSearch(!useWebSearch)}
                 variant="ghost"
+                disabled={disabled}
               >
                 <SearchIcon size={16} />
                 <span>DeepSearch</span>
@@ -124,13 +136,19 @@ export function ChatInput({ onSubmit }: ChatInputProps) {
                 className="rounded-r-full"
                 size="icon-sm"
                 variant="ghost"
+                disabled={disabled}
               >
                 <ChevronDownIcon size={16} />
               </PromptInputButton>
             </div>
             <PromptInputButton
-              className="!rounded-full text-foreground"
+              className={cn(
+                "!rounded-full text-foreground",
+                isThinkingEnabled && "bg-primary/10 border-primary"
+              )}
               variant="outline"
+              onClick={() => onThinkingToggle?.(!isThinkingEnabled)}
+              disabled={disabled}
             >
               <LightbulbIcon size={16} />
               <span>Think</span>
@@ -147,6 +165,7 @@ export function ChatInput({ onSubmit }: ChatInputProps) {
               className="rounded-full bg-foreground font-medium text-background"
               onClick={() => setUseMicrophone(!useMicrophone)}
               variant="default"
+              disabled={disabled}
             >
               <AudioWaveformIcon size={16} />
               <span className="sr-only">Voice</span>
@@ -157,4 +176,3 @@ export function ChatInput({ onSubmit }: ChatInputProps) {
     </div>
   )
 }
-
