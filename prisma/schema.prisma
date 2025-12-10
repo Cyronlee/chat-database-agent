@@ -1,0 +1,358 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model jira_allocation_limits {
+  id             BigInt    @id @default(autoincrement())
+  capacity       Decimal?  @db.Decimal
+  effective_date DateTime? @db.Timestamptz(6)
+  row_created_at DateTime? @default(now()) @db.Timestamptz(6)
+  row_updated_at DateTime? @db.Timestamptz(6)
+  email          String?
+}
+
+model jira_avatars {
+  id             BigInt    @id @default(autoincrement())
+  source_id      String?
+  row_updated_at DateTime? @db.Timestamptz(6)
+  row_created_at DateTime? @default(now()) @db.Timestamptz(6)
+  synced_at      DateTime? @db.Timestamptz(6)
+  system_avatar  Boolean?
+  svg_small      Bytes?
+}
+
+model jira_boards {
+  id                 BigInt               @id @default(autoincrement())
+  connection_id      BigInt?
+  source_id          String?
+  name               String?
+  board_type         String?
+  private            String?
+  row_created_at     DateTime?            @default(now()) @db.Timestamptz(6)
+  row_updated_at     DateTime?            @db.Timestamptz(6)
+  api_accessible     Boolean?
+  sprints_synced_at  DateTime?            @db.Timestamptz(6)
+  supports_sprints   Boolean?
+  jira_sprint_boards jira_sprint_boards[]
+  jira_sprints       jira_sprints[]
+}
+
+model jira_custom_fields {
+  id                             BigInt                           @id @default(autoincrement())
+  connection_id                  BigInt?
+  name                           String?
+  key                            String?
+  row_created_at                 DateTime?                        @default(now()) @db.Timestamptz(6)
+  row_updated_at                 DateTime?                        @db.Timestamptz(6)
+  jira_issue_custom_field_values jira_issue_custom_field_values[]
+}
+
+model jira_issue_allocation_categories {
+  id                                         BigInt                                       @id @default(autoincrement())
+  name                                       String?
+  rules                                      Json?
+  row_updated_at                             DateTime?                                    @db.Timestamptz(6)
+  row_created_at                             DateTime?                                    @default(now()) @db.Timestamptz(6)
+  capex_only                                 Boolean?
+  published                                  Boolean?
+  populated_at                               DateTime?                                    @db.Timestamptz(6)
+  jira_issue_allocation_category_assignments jira_issue_allocation_category_assignments[]
+}
+
+model jira_issue_allocation_category_assignments {
+  id                                BigInt                            @id @default(autoincrement())
+  jira_issue_id                     BigInt?
+  jira_issue_allocation_category_id BigInt?
+  value                             String?
+  row_updated_at                    DateTime?                         @db.Timestamptz(6)
+  row_created_at                    DateTime?                         @default(now()) @db.Timestamptz(6)
+  jira_issue_allocation_categories  jira_issue_allocation_categories? @relation(fields: [jira_issue_allocation_category_id], references: [id])
+  jira_issues                       jira_issues?                      @relation(fields: [jira_issue_id], references: [id])
+}
+
+model jira_issue_allocations {
+  id             BigInt       @id @default(autoincrement())
+  month          DateTime?    @db.Date
+  issue_id       BigInt?
+  user_id        BigInt?
+  row_updated_at DateTime?    @db.Timestamptz(6)
+  row_created_at DateTime?    @default(now()) @db.Timestamptz(6)
+  dev_days       Decimal?     @db.Decimal
+  jira_issues    jira_issues? @relation(fields: [issue_id], references: [id])
+  jira_users     jira_users?  @relation(fields: [user_id], references: [id])
+}
+
+model jira_issue_custom_field_values {
+  id                 BigInt              @id @default(autoincrement())
+  issue_id           BigInt?
+  custom_field_id    BigInt?
+  value              String?
+  row_updated_at     DateTime?           @db.Timestamptz(6)
+  row_created_at     DateTime?           @default(now()) @db.Timestamptz(6)
+  jira_custom_fields jira_custom_fields? @relation(fields: [custom_field_id], references: [id])
+  jira_issues        jira_issues?        @relation(fields: [issue_id], references: [id])
+}
+
+model jira_issue_labels {
+  id             BigInt       @id @default(autoincrement())
+  issue_id       BigInt?
+  label_id       BigInt?
+  row_updated_at DateTime?    @db.Timestamptz(6)
+  row_created_at DateTime?    @default(now()) @db.Timestamptz(6)
+  jira_issues    jira_issues? @relation(fields: [issue_id], references: [id])
+  jira_labels    jira_labels? @relation(fields: [label_id], references: [id])
+}
+
+model jira_issue_links {
+  id                     BigInt       @id @default(autoincrement())
+  issue_id               BigInt?
+  link_source_id         String?
+  link_type_id           String?
+  link_type_name         String?
+  link_inward_name       String?
+  link_outward_name      String?
+  linked_issue_source_id String?
+  linked_issue_key       String?
+  linked_issue_summary   String?
+  direction              String?
+  row_updated_at         DateTime?    @db.Timestamptz(6)
+  row_created_at         DateTime?    @default(now()) @db.Timestamptz(6)
+  jira_issues            jira_issues? @relation(fields: [issue_id], references: [id])
+}
+
+model jira_issue_relationships {
+  id                                                              BigInt       @id @default(autoincrement())
+  ancestor_id                                                     BigInt?
+  descendant_id                                                   BigInt?
+  row_created_at                                                  DateTime?    @default(now()) @db.Timestamptz(6)
+  row_updated_at                                                  DateTime?    @db.Timestamptz(6)
+  jira_issues_jira_issue_relationships_ancestor_idTojira_issues   jira_issues? @relation("jira_issue_relationships_ancestor_idTojira_issues", fields: [ancestor_id], references: [id])
+  jira_issues_jira_issue_relationships_descendant_idTojira_issues jira_issues? @relation("jira_issue_relationships_descendant_idTojira_issues", fields: [descendant_id], references: [id])
+}
+
+model jira_issue_sprints {
+  id             BigInt         @id @default(autoincrement())
+  issue_id       BigInt?
+  sprint_id      BigInt?
+  project_id     BigInt?
+  planned        Boolean?
+  planned_points Decimal?       @db.Decimal
+  deleted_at     DateTime?      @db.Timestamptz(6)
+  row_updated_at DateTime?      @db.Timestamptz(6)
+  row_created_at DateTime?      @default(now()) @db.Timestamptz(6)
+  jira_issues    jira_issues?   @relation(fields: [issue_id], references: [id])
+  jira_projects  jira_projects? @relation(fields: [project_id], references: [id])
+  jira_sprints   jira_sprints?  @relation(fields: [sprint_id], references: [id])
+}
+
+model jira_issue_status_changes {
+  id                 BigInt         @id @default(autoincrement())
+  issue_id           BigInt?
+  status_id          BigInt?
+  status_change_date DateTime?      @db.Timestamptz(6)
+  row_updated_at     DateTime?      @db.Timestamptz(6)
+  row_created_at     DateTime?      @default(now()) @db.Timestamptz(6)
+  jira_issues        jira_issues?   @relation(fields: [issue_id], references: [id])
+  jira_statuses      jira_statuses? @relation(fields: [status_id], references: [id])
+}
+
+model jira_issue_types {
+  id              BigInt         @id @default(autoincrement())
+  source_id       String?
+  connection_id   BigInt?
+  project_id      BigInt?
+  avatar_id       BigInt?
+  name            String?
+  description     String?
+  hierarchy_level Int?
+  icon_png_blob   Bytes?
+  icon_svg_blob   Bytes?
+  icon_synced_at  DateTime?      @db.Timestamptz(6)
+  row_created_at  DateTime?      @default(now()) @db.Timestamptz(6)
+  row_updated_at  DateTime?      @db.Timestamptz(6)
+  jira_projects   jira_projects? @relation(fields: [project_id], references: [id])
+  jira_issues     jira_issues[]
+}
+
+model jira_issues {
+  id                                                                           BigInt                                       @id @default(autoincrement())
+  connection_id                                                                BigInt?
+  source_id                                                                    String?
+  issue_type_id                                                                BigInt?
+  project_id                                                                   BigInt?
+  resolution_id                                                                BigInt?
+  status_id                                                                    BigInt?
+  priority_id                                                                  BigInt?
+  user_id                                                                      BigInt?
+  creator_id                                                                   BigInt?
+  source_url                                                                   String?
+  summary                                                                      String?
+  key                                                                          String?
+  parent_key                                                                   String?
+  story_points                                                                 Decimal?                                     @db.Decimal
+  resolution_date                                                              DateTime?                                    @db.Timestamptz(6)
+  due_date                                                                     DateTime?                                    @db.Timestamptz(6)
+  row_created_at                                                               DateTime?                                    @default(now()) @db.Timestamptz(6)
+  created_at                                                                   DateTime?                                    @db.Timestamptz(6)
+  last_synced_at                                                               DateTime?                                    @db.Timestamptz(6)
+  row_updated_at                                                               DateTime?                                    @db.Timestamptz(6)
+  updated_at                                                                   DateTime?                                    @db.Timestamptz(6)
+  cycle_time                                                                   Int?
+  synced_at                                                                    DateTime?                                    @db.Timestamptz(6)
+  started_at                                                                   DateTime?                                    @db.Timestamptz(6)
+  completed_at                                                                 DateTime?                                    @db.Timestamptz(6)
+  deleted_at                                                                   DateTime?                                    @db.Timestamptz(6)
+  api_error_changelog_sync                                                     Boolean?
+  jira_issue_allocation_category_assignments                                   jira_issue_allocation_category_assignments[]
+  jira_issue_allocations                                                       jira_issue_allocations[]
+  jira_issue_custom_field_values                                               jira_issue_custom_field_values[]
+  jira_issue_labels                                                            jira_issue_labels[]
+  jira_issue_links                                                             jira_issue_links[]
+  jira_issue_relationships_jira_issue_relationships_ancestor_idTojira_issues   jira_issue_relationships[]                   @relation("jira_issue_relationships_ancestor_idTojira_issues")
+  jira_issue_relationships_jira_issue_relationships_descendant_idTojira_issues jira_issue_relationships[]                   @relation("jira_issue_relationships_descendant_idTojira_issues")
+  jira_issue_sprints                                                           jira_issue_sprints[]
+  jira_issue_status_changes                                                    jira_issue_status_changes[]
+  jira_users_jira_issues_creator_idTojira_users                                jira_users?                                  @relation("jira_issues_creator_idTojira_users", fields: [creator_id], references: [id])
+  jira_issue_types                                                             jira_issue_types?                            @relation(fields: [issue_type_id], references: [id])
+  jira_priorities                                                              jira_priorities?                             @relation(fields: [priority_id], references: [id])
+  jira_projects                                                                jira_projects?                               @relation(fields: [project_id], references: [id])
+  jira_resolutions                                                             jira_resolutions?                            @relation(fields: [resolution_id], references: [id])
+  jira_statuses                                                                jira_statuses?                               @relation(fields: [status_id], references: [id])
+  jira_users_jira_issues_user_idTojira_users                                   jira_users?                                  @relation("jira_issues_user_idTojira_users", fields: [user_id], references: [id])
+  jira_sprints_planned_issues                                                  jira_sprints_planned_issues[]
+}
+
+model jira_labels {
+  id                BigInt              @id @default(autoincrement())
+  name              String?
+  connection_id     BigInt?
+  row_created_at    DateTime?           @default(now()) @db.Timestamptz(6)
+  row_updated_at    DateTime?           @db.Timestamptz(6)
+  jira_issue_labels jira_issue_labels[]
+}
+
+model jira_priorities {
+  id             BigInt        @id @default(autoincrement())
+  source_id      String?
+  connection_id  BigInt?
+  name           String?
+  description    String?
+  source_url     String?
+  status_color   String?
+  accessible     Boolean?
+  default        Boolean?
+  row_updated_at DateTime?     @db.Timestamptz(6)
+  row_created_at DateTime?     @default(now()) @db.Timestamptz(6)
+  jira_issues    jira_issues[]
+}
+
+model jira_projects {
+  id                     BigInt               @id @default(autoincrement())
+  source_id              String?
+  connection_id          BigInt?
+  project_type_key       String?
+  name                   String?
+  key                    String?              @db.VarChar
+  private                Boolean?
+  deleted_at             DateTime?            @db.Timestamptz(6)
+  archived_at            DateTime?            @db.Timestamptz(6)
+  total_issue_count      Int?
+  last_issue_update_time DateTime?            @db.Timestamptz(6)
+  issue_types_synced_at  DateTime?            @db.Timestamptz(6)
+  issues_synced_at       DateTime?            @db.Timestamptz(6)
+  issues_synced_to       DateTime?            @db.Timestamptz(6)
+  row_created_at         DateTime?            @default(now()) @db.Timestamptz(6)
+  row_updated_at         DateTime?            @db.Timestamptz(6)
+  api_accessible         Boolean?
+  allowlisted            Boolean?
+  jira_issue_sprints     jira_issue_sprints[]
+  jira_issue_types       jira_issue_types[]
+  jira_issues            jira_issues[]
+  jira_sprints           jira_sprints[]
+}
+
+model jira_resolutions {
+  id             BigInt        @id @default(autoincrement())
+  source_id      String?
+  connection_id  BigInt?
+  name           String?
+  description    String?
+  default        Boolean?
+  row_created_at DateTime?     @default(now()) @db.Timestamptz(6)
+  row_updated_at DateTime?     @db.Timestamptz(6)
+  jira_issues    jira_issues[]
+}
+
+model jira_sprint_boards {
+  id             BigInt        @id @default(autoincrement())
+  sprint_id      BigInt?
+  board_id       BigInt?
+  deleted_at     DateTime?     @db.Timestamptz(6)
+  row_updated_at DateTime?     @db.Timestamptz(6)
+  row_created_at DateTime?     @default(now()) @db.Timestamptz(6)
+  jira_boards    jira_boards?  @relation(fields: [board_id], references: [id])
+  jira_sprints   jira_sprints? @relation(fields: [sprint_id], references: [id])
+}
+
+model jira_sprints {
+  id                          BigInt                        @id @default(autoincrement())
+  source_id                   String?
+  board_id                    BigInt?
+  connection_id               BigInt?
+  project_id                  BigInt?
+  name                        String?
+  state                       String?
+  start_date                  DateTime?                     @db.Timestamptz(6)
+  end_date                    DateTime?                     @db.Timestamptz(6)
+  complete_date               DateTime?                     @db.Timestamptz(6)
+  row_created_at              DateTime?                     @default(now()) @db.Timestamptz(6)
+  row_updated_at              DateTime?                     @db.Timestamptz(6)
+  deleted_at                  DateTime?                     @db.Timestamptz(6)
+  jira_issue_sprints          jira_issue_sprints[]
+  jira_sprint_boards          jira_sprint_boards[]
+  jira_boards                 jira_boards?                  @relation(fields: [board_id], references: [id])
+  jira_projects               jira_projects?                @relation(fields: [project_id], references: [id])
+  jira_sprints_planned_issues jira_sprints_planned_issues[]
+}
+
+model jira_sprints_planned_issues {
+  id             BigInt        @id @default(autoincrement())
+  sprint_id      BigInt?
+  issue_id       BigInt?
+  row_created_at DateTime?     @default(now()) @db.Timestamptz(6)
+  row_updated_at DateTime?     @db.Timestamptz(6)
+  jira_issues    jira_issues?  @relation(fields: [issue_id], references: [id])
+  jira_sprints   jira_sprints? @relation(fields: [sprint_id], references: [id])
+}
+
+model jira_statuses {
+  id                        BigInt                      @id @default(autoincrement())
+  source_id                 String?
+  connection_id             BigInt?
+  name                      String?
+  description               String?
+  status_category           String?
+  row_updated_at            DateTime?                   @db.Timestamptz(6)
+  row_created_at            DateTime?                   @default(now()) @db.Timestamptz(6)
+  jira_issue_status_changes jira_issue_status_changes[]
+  jira_issues               jira_issues[]
+}
+
+model jira_users {
+  id                                             BigInt                   @id @default(autoincrement())
+  source_id                                      String?
+  account_id                                     String?
+  email                                          String?
+  name                                           String?
+  actived                                        Boolean?
+  row_created_at                                 DateTime?                @default(now()) @db.Timestamptz(6)
+  row_updated_at                                 DateTime?                @db.Timestamptz(6)
+  jira_issue_allocations                         jira_issue_allocations[]
+  jira_issues_jira_issues_creator_idTojira_users jira_issues[]            @relation("jira_issues_creator_idTojira_users")
+  jira_issues_jira_issues_user_idTojira_users    jira_issues[]            @relation("jira_issues_user_idTojira_users")
+}

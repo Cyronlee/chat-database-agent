@@ -2,15 +2,11 @@
 
 import * as React from "react"
 import {
-  AudioWaveform,
   BookOpen,
   Bot,
   MessageCircle,
-  Command,
-  Frame,
+  Database,
   GalleryVerticalEnd,
-  Map,
-  PieChart,
   Settings2,
   SquareTerminal,
 } from "lucide-react"
@@ -43,10 +39,21 @@ const data = {
   ],
   navMain: [
     {
+      title: "Data Management",
+      url: "#",
+      icon: Database,
+      isActive: true,
+      items: [
+        {
+          title: "Jira Sync",
+          url: "/jira-sync",
+        },
+      ],
+    },
+    {
       title: "Playground",
       url: "#",
       icon: SquareTerminal,
-      isActive: true,
       items: [
         {
           title: "History",
