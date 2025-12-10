@@ -49,8 +49,8 @@ const data = {
           url: "/jira-sync",
         },
         {
-          title: "Database",
-          url: "/database",
+          title: "Data Studio",
+          url: "/data-studio",
         },
       ],
     },
