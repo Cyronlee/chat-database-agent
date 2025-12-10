@@ -1,0 +1,36 @@
+---
+alwaysApply: true
+---
+
+# Global Rules
+
+## Tech Stack
+
+- Bun
+- Next.js 15
+- TypeScript
+- Tailwind CSS
+- Shadcn/ui
+- Zod
+- streamdown
+- lucide-react
+
+## Frontend & Backend Communication
+
+- Force to use client components in frontend
+- Use Next.js route to provide backend APIs
+- Maintain each API client in a separate file in `api-clients` folder
+
+## Custom Components
+
+- Split components into smaller files following best practices
+- Avoid barrel exports
+
+## Import Conventions
+
+- Use `@/` prefix for internal imports
+- Use `import type` for type-only imports
+
+## Quality Standards
+
+- Ensure `bun run build` pass after any changes
