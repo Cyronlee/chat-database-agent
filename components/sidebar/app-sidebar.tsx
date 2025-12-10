@@ -5,6 +5,7 @@ import {
   AudioWaveform,
   BookOpen,
   Bot,
+  MessageCircle,
   Command,
   Frame,
   GalleryVerticalEnd,
@@ -15,7 +16,7 @@ import {
 } from "lucide-react"
 
 import { NavMain } from "@/components/sidebar/nav-main"
-import { NavProjects } from "@/components/sidebar/nav-projects"
+import { NavConversations } from "@/components/sidebar/nav-conversations"
 import { NavUser } from "@/components/sidebar/nav-user"
 import { TeamSwitcher } from "@/components/sidebar/team-switcher"
 import {
@@ -35,19 +36,9 @@ const data = {
   },
   teams: [
     {
-      name: "Acme Inc",
+      name: "Jira Report Agent",
       logo: GalleryVerticalEnd,
       plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
     },
   ],
   navMain: [
@@ -137,21 +128,21 @@ const data = {
       ],
     },
   ],
-  projects: [
+  conversations: [
     {
       name: "Design Engineering",
       url: "#",
-      icon: Frame,
+      icon: MessageCircle,
     },
     {
       name: "Sales & Marketing",
       url: "#",
-      icon: PieChart,
+      icon: MessageCircle,
     },
     {
       name: "Travel",
       url: "#",
-      icon: Map,
+      icon: MessageCircle,
     },
   ],
 }
@@ -163,8 +154,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
+        <NavConversations conversations={data.conversations} />
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

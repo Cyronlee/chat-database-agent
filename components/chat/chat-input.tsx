@@ -69,9 +69,9 @@ export function ChatInput({
   }
 
   return (
-    <div className="grid shrink-0 gap-4 border-t bg-background p-4">
+    <div className="grid shrink-0 gap-4 bg-secondary py-4">
       <PromptInput
-        className="divide-y-0 rounded-[28px]"
+        className="divide-y-0 rounded-[28px] max-w-4xl mx-auto"
         onSubmit={handleSubmit}
       >
         <PromptInputTextarea

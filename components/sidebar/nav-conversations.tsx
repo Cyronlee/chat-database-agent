@@ -4,6 +4,7 @@ import {
   Folder,
   Forward,
   MoreHorizontal,
+  Pencil,
   Trash2,
   type LucideIcon,
 } from "lucide-react"
@@ -26,10 +27,10 @@ import {
 } from "@/components/ui/sidebar"
 import { toast } from "sonner"
 
-export function NavProjects({
-  projects,
+export function NavConversations({
+  conversations,
 }: {
-  projects: {
+  conversations: {
     name: string
     url: string
     icon: LucideIcon
@@ -39,9 +40,9 @@ export function NavProjects({
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Projects</SidebarGroupLabel>
+      <SidebarGroupLabel>Conversations</SidebarGroupLabel>
       <SidebarMenu>
-        {projects.map((item) => (
+        {conversations.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
               <a href={item.url}>
@@ -63,20 +64,19 @@ export function NavProjects({
               >
                 <DropdownMenuItem
                   onClick={() => {
-                    toast.success("View Project")
+                    toast.success("Rename Conversation")
                   }}
                 >
-                  <Folder className="text-muted-foreground" />
-                  <span>View Project</span>
+                  <Pencil className="text-muted-foreground" />
+                  <span>Rename</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Forward className="text-muted-foreground" />
-                  <span>Share Project</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    toast.success("Delete Conversation")
+                  }}
+                >
                   <Trash2 className="text-muted-foreground" />
-                  <span>Delete Project</span>
+                  <span>Delete</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
