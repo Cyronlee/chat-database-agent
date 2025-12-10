@@ -21,6 +21,12 @@ alwaysApply: true
 - Use Next.js route to provide backend APIs
 - Maintain each API client in a separate file in `api-clients` folder
 
+## UI Components
+
+- Use `@/components/ui` atomic components
+- Do not use `@/components/ui/card` unless I ask for it
+- Use `@/components/ai-elements` for AI components
+
 ## Custom Components
 
 - Split components into smaller files following best practices
