@@ -8,9 +8,10 @@ import { Slot as SlotPrimitive } from 'radix-ui';
 
 type ToggleIconType = 'chevron' | 'plus-minus';
 
-interface TreeContextValue<T = any> {
+interface TreeContextValue<T = unknown> {
   indent: number;
   currentItem?: ItemInstance<T>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tree?: any;
   toggleIconType?: ToggleIconType;
 }
@@ -22,12 +23,13 @@ const TreeContext = React.createContext<TreeContextValue>({
   toggleIconType: 'plus-minus',
 });
 
-function useTreeContext<T = any>() {
+function useTreeContext<T = unknown>() {
   return React.useContext(TreeContext) as TreeContextValue<T>;
 }
 
 interface TreeProps extends React.HTMLAttributes<HTMLDivElement> {
   indent?: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tree?: any;
   toggleIconType?: ToggleIconType;
 }
@@ -52,13 +54,13 @@ function Tree({ indent = 20, tree, className, toggleIconType = 'chevron', ...pro
   );
 }
 
-interface TreeItemProps<T = any> extends React.HTMLAttributes<HTMLButtonElement> {
+interface TreeItemProps<T = unknown> extends React.HTMLAttributes<HTMLButtonElement> {
   item: ItemInstance<T>;
   indent?: number;
   asChild?: boolean;
 }
 
-function TreeItem<T = any>({ item, className, asChild, children, ...props }: Omit<TreeItemProps<T>, 'indent'>) {
+function TreeItem<T = unknown>({ item, className, asChild, children, ...props }: Omit<TreeItemProps<T>, 'indent'>) {
   const parentContext = useTreeContext<T>();
   const { indent } = parentContext;
 
@@ -77,7 +79,7 @@ function TreeItem<T = any>({ item, className, asChild, children, ...props }: Omi
   const Comp = asChild ? SlotPrimitive.Slot : 'button';
 
   return (
-    <TreeContext.Provider value={{ ...parentContext, currentItem: item }}>
+    <TreeContext.Provider value={{ ...parentContext, currentItem: item as ItemInstance<unknown> }}>
       <Comp
         data-slot="tree-item"
         style={mergedStyle}
@@ -99,11 +101,11 @@ function TreeItem<T = any>({ item, className, asChild, children, ...props }: Omi
   );
 }
 
-interface TreeItemLabelProps<T = any> extends React.HTMLAttributes<HTMLSpanElement> {
+interface TreeItemLabelProps<T = unknown> extends React.HTMLAttributes<HTMLSpanElement> {
   item?: ItemInstance<T>;
 }
 
-function TreeItemLabel<T = any>({ item: propItem, children, className, ...props }: TreeItemLabelProps<T>) {
+function TreeItemLabel<T = unknown>({ item: propItem, children, className, ...props }: TreeItemLabelProps<T>) {
   const { currentItem, toggleIconType } = useTreeContext<T>();
   const item = propItem || currentItem;
 

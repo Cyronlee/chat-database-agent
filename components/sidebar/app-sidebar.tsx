@@ -48,6 +48,10 @@ const data = {
           title: "Jira Sync",
           url: "/jira-sync",
         },
+        {
+          title: "Database",
+          url: "/database",
+        },
       ],
     },
     {

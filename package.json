@@ -21,6 +21,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@headless-tree/core": "^1.5.1",
+    "@headless-tree/react": "^1.5.1",
     "@hookform/resolvers": "^5.2.2",
     "@prisma/client": "^6.9.0",
     "@radix-ui/react-accordion": "^1.2.12",

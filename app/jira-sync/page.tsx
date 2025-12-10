@@ -35,7 +35,7 @@ function TaskResultItem({ task }: { task: SyncTaskResult }) {
             <XCircle className="h-5 w-5 text-red-500" />
           )}
           <span className="font-medium">{task.taskName}</span>
-          <Badge variant={task.success ? "default" : "destructive"}>
+          <Badge variant={task.success ? "success" : "destructive"}>
             {task.success ? "Success" : "Failed"}
           </Badge>
         </div>

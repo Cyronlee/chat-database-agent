@@ -11,6 +11,7 @@
         "@dnd-kit/sortable": "^10.0.0",
         "@dnd-kit/utilities": "^3.2.2",
         "@headless-tree/core": "^1.5.1",
+        "@headless-tree/react": "^1.5.1",
         "@hookform/resolvers": "^5.2.2",
         "@prisma/client": "^6.9.0",
         "@radix-ui/react-accordion": "^1.2.12",
@@ -159,6 +160,8 @@
     "@floating-ui/utils": ["@floating-ui/utils@0.2.10", "", {}, "sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ=="],
 
     "@headless-tree/core": ["@headless-tree/core@1.5.1", "", {}, "sha512-uPoFcjPYdnXwuEDJd2oCMY8a4nnsMKyx6P0G1+is6dIGFpUsoV0qjtJN6ykJtOgTHVhBRR11zRmletER6Qgj/Q=="],
+
+    "@headless-tree/react": ["@headless-tree/react@1.5.1", "", { "peerDependencies": { "@headless-tree/core": "*", "react": "*", "react-dom": "*" } }, "sha512-8r34ug5g25peTDgyGoCZf5Ohy4O0FMhdhUNyiaXzGn/1nwUDpmmwsrqh64DVNPereSA9uhY0s39uRibfvdmTqw=="],
 
     "@hookform/resolvers": ["@hookform/resolvers@5.2.2", "", { "dependencies": { "@standard-schema/utils": "^0.3.0" }, "peerDependencies": { "react-hook-form": "^7.55.0" } }, "sha512-A/IxlMLShx3KjV/HeTcTfaMxdwy690+L/ZADoeaTltLx+CVuzkeVIPuybK3jrRfw7YZnmdKsVVHAlEPIAEUNlA=="],
 
