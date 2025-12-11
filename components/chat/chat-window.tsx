@@ -1,18 +1,20 @@
 "use client"
 
 import { useChat } from "@ai-sdk/react"
-import { DefaultChatTransport, isToolUIPart, getToolName } from "ai"
+import { DefaultChatTransport } from "ai"
 import { useState } from "react"
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input"
 import { ChatInput } from "./chat-input"
 import { ChatMessageList } from "./chat-message-list"
-import { getToolsRequiringConfirmation } from "@/app/api/chat/tools"
 import { toast } from "sonner"
 
 const APPROVAL = {
   YES: "Yes, confirmed.",
   NO: "No, denied.",
 } as const
+
+// All current tools auto-execute, so no confirmation is required
+const toolsRequiringConfirmation: string[] = []
 
 export function ChatWindow() {
   const [isThinkingEnabled, setIsThinkingEnabled] = useState(true)
@@ -25,18 +27,6 @@ export function ChatWindow() {
       toast.error(error.message)
     },
   })
-
-  const toolsRequiringConfirmation = getToolsRequiringConfirmation()
-
-  // Check if there's a pending tool call confirmation
-  const pendingToolCallConfirmation = messages.some((m) =>
-    m.parts?.some(
-      (part) =>
-        isToolUIPart(part) &&
-        part.state === "input-available" &&
-        toolsRequiringConfirmation.includes(getToolName(part))
-    )
-  )
 
   const handleSubmit = (message: PromptInputMessage) => {
     const hasText = Boolean(message.text)
@@ -71,7 +61,7 @@ export function ChatWindow() {
       />
       <ChatInput
         onSubmit={handleSubmit}
-        disabled={pendingToolCallConfirmation || status === "streaming"}
+        disabled={status === "streaming"}
         isThinkingEnabled={isThinkingEnabled}
         onThinkingToggle={setIsThinkingEnabled}
       />
