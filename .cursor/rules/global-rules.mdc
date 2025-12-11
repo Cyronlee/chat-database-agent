@@ -16,6 +16,10 @@ alwaysApply: true
 - streamdown
 - lucide-react
 
+## Runtime
+
+- Node.js in docker container
+
 ## Frontend & Backend Communication
 
 - Force to use client components in frontend
