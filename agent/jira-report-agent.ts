@@ -345,7 +345,6 @@ ${WARNINGS}
 export const QUERY_DATABASE_TOOL_DESCRIPTION = `Execute a SQL SELECT query against the Jira database for data validation.
 
 Use this tool to run sample queries with LIMIT to verify query logic before generating the final report.
-Only SELECT queries are allowed for security.
 
 IMPORTANT:
 - Always add LIMIT 5-10 when using this tool

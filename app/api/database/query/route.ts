@@ -27,15 +27,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Basic security: only allow SELECT queries
-    const trimmedSql = sql.trim().toLowerCase()
-    if (!trimmedSql.startsWith("select")) {
-      return NextResponse.json(
-        { error: "Only SELECT queries are allowed" },
-        { status: 400 }
-      )
-    }
-
     // Execute the query
     const result = await prisma.$queryRawUnsafe(sql)
 

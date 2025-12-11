@@ -50,7 +50,7 @@ export function ChatMessageItem({
   const { role, parts } = message
 
   // Collect text parts to potentially merge consecutive text parts
-  let mergedParts: Array<
+  const mergedParts: Array<
     ReasoningUIPart | ToolUIPart | { type: "text"; text: string; index: number }
   > = []
   let currentText = ""
@@ -241,7 +241,6 @@ export function ChatMessageItem({
  */
 function TextContentWithSqlBlocks({
   content,
-  isUser,
 }: {
   content: string
   isUser: boolean
