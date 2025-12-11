@@ -2,11 +2,12 @@
 
 import { useChat } from "@ai-sdk/react"
 import { DefaultChatTransport } from "ai"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input"
 import { ChatInput } from "./chat-input"
 import { ChatMessageList } from "./chat-message-list"
 import { toast } from "sonner"
+import { models } from "./constants"
 
 const APPROVAL = {
   YES: "Yes, confirmed.",
@@ -18,15 +19,28 @@ const toolsRequiringConfirmation: string[] = []
 
 export function ChatWindow() {
   const [isThinkingEnabled, setIsThinkingEnabled] = useState(true)
+  const [model, setModel] = useState<string>(models[0].id)
 
-  const { messages, sendMessage, status, addToolOutput } = useChat({
-    transport: new DefaultChatTransport({
-      api: "/api/chat",
-    }),
-    onError: (error) => {
-      toast.error(error.message)
-    },
-  })
+  const transport = useMemo(
+    () =>
+      new DefaultChatTransport({
+        api: "/api/chat",
+        body: {
+          model,
+          thinking: isThinkingEnabled,
+        },
+      }),
+    [model, isThinkingEnabled]
+  )
+
+  const { messages, sendMessage, status, addToolOutput, setMessages } = useChat(
+    {
+      transport,
+      onError: (error) => {
+        toast.error(error.message)
+      },
+    }
+  )
 
   const handleSubmit = (message: PromptInputMessage) => {
     const hasText = Boolean(message.text)
@@ -52,6 +66,10 @@ export function ChatWindow() {
     sendMessage()
   }
 
+  const handleClearSession = () => {
+    setMessages([])
+  }
+
   return (
     <div className="relative flex h-full flex-col overflow-hidden bg-secondary">
       <ChatMessageList
@@ -64,6 +82,9 @@ export function ChatWindow() {
         disabled={status === "streaming"}
         isThinkingEnabled={isThinkingEnabled}
         onThinkingToggle={setIsThinkingEnabled}
+        model={model}
+        onModelChange={setModel}
+        onClearSession={handleClearSession}
       />
     </div>
   )

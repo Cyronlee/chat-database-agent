@@ -14,25 +14,35 @@ import { SYSTEM_PROMPT } from "@/agent/jira-report-agent"
 export const maxDuration = 60
 
 export async function POST(req: Request) {
-  const { messages }: { messages: UIMessage[] } = await req.json()
+  const {
+    messages,
+    model = "gemini-2.5-flash",
+    thinking = true,
+  }: {
+    messages: UIMessage[]
+    model?: string
+    thinking?: boolean
+  } = await req.json()
 
   const stream = createUIMessageStream({
     originalMessages: messages,
     execute: async ({ writer }) => {
       const result = streamText({
-        model: google("gemini-2.5-flash"),
+        model: google(model),
         system: SYSTEM_PROMPT,
         messages: convertToModelMessages(messages),
         tools: { queryDatabase },
         stopWhen: stepCountIs(5),
-        providerOptions: {
-          google: {
-            thinkingConfig: {
-              thinkingBudget: 4096,
-              includeThoughts: false,
-            },
-          } satisfies GoogleGenerativeAIProviderOptions,
-        },
+        providerOptions: thinking
+          ? {
+              google: {
+                thinkingConfig: {
+                  thinkingBudget: 4096,
+                  includeThoughts: false,
+                },
+              } satisfies GoogleGenerativeAIProviderOptions,
+            }
+          : undefined,
       })
 
       writer.merge(result.toUIMessageStream({ originalMessages: messages }))

@@ -2,17 +2,14 @@
 
 import * as React from "react"
 import {
-  BookOpen,
-  Bot,
   MessageCircle,
   Database,
   GalleryVerticalEnd,
-  Settings2,
-  SquareTerminal,
+  Home,
+  BarChart3,
 } from "lucide-react"
 
 import { NavMain } from "@/components/sidebar/nav-main"
-import { NavConversations } from "@/components/sidebar/nav-conversations"
 import { NavUser } from "@/components/sidebar/nav-user"
 import { TeamSwitcher } from "@/components/sidebar/team-switcher"
 import {
@@ -39,104 +36,19 @@ const data = {
   ],
   navMain: [
     {
-      title: "Data Management",
-      url: "#",
+      title: "Home",
+      url: "/",
+      icon: Home,
+    },
+    {
+      title: "Jira Sync",
+      url: "/jira-sync",
       icon: Database,
-      isActive: true,
-      items: [
-        {
-          title: "Jira Sync",
-          url: "/jira-sync",
-        },
-        {
-          title: "Data Studio",
-          url: "/data-studio",
-        },
-      ],
     },
     {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
+      title: "Data Studio",
+      url: "/data-studio",
+      icon: BarChart3,
     },
   ],
   conversations: [
@@ -165,8 +77,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavConversations conversations={data.conversations} />
         <NavMain items={data.navMain} />
+        {/* <NavConversations conversations={data.conversations} /> */}
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

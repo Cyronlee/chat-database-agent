@@ -15,7 +15,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
-  AudioWaveformIcon,
   CameraIcon,
   ChevronDownIcon,
   FileIcon,
@@ -24,6 +23,9 @@ import {
   PaperclipIcon,
   ScreenShareIcon,
   SearchIcon,
+  SendIcon,
+  SquareIcon,
+  Trash2Icon,
 } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
@@ -34,21 +36,29 @@ import { cn } from "@/lib/utils"
 type ChatInputProps = {
   onSubmit: (message: PromptInputMessage) => void
   disabled?: boolean
+  isLoading?: boolean
+  onStop?: () => void
   isThinkingEnabled?: boolean
   onThinkingToggle?: (enabled: boolean) => void
+  model?: string
+  onModelChange?: (model: string) => void
+  onClearSession?: () => void
 }
 
 export function ChatInput({
   onSubmit,
   disabled = false,
+  isLoading = false,
+  onStop,
   isThinkingEnabled = true,
   onThinkingToggle,
+  model = models[0].id,
+  onModelChange,
+  onClearSession,
 }: ChatInputProps) {
-  const [model, setModel] = useState<string>(models[0].id)
   const [modelSelectorOpen, setModelSelectorOpen] = useState(false)
   const [text, setText] = useState<string>("")
   const [useWebSearch, setUseWebSearch] = useState<boolean>(false)
-  const [useMicrophone, setUseMicrophone] = useState<boolean>(false)
 
   const handleSubmit = (message: PromptInputMessage) => {
     const hasText = Boolean(message.text)
@@ -86,7 +96,7 @@ export function ChatInput({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <PromptInputButton
-                  className="!rounded-full border text-foreground"
+                  className="!rounded-full border text-foreground hidden"
                   variant="outline"
                   disabled={disabled}
                 >
@@ -121,7 +131,7 @@ export function ChatInput({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <div className="flex items-center rounded-full border">
+            <div className="flex items-center rounded-full border hidden">
               <PromptInputButton
                 className="!rounded-l-full text-foreground"
                 onClick={() => setUseWebSearch(!useWebSearch)}
@@ -153,23 +163,43 @@ export function ChatInput({
               <LightbulbIcon size={16} />
               <span>Think</span>
             </PromptInputButton>
+            <PromptInputButton
+              className="!rounded-full text-foreground"
+              variant="outline"
+              onClick={onClearSession}
+              disabled={disabled}
+            >
+              <Trash2Icon size={16} />
+              <span>Clear</span>
+            </PromptInputButton>
           </PromptInputTools>
           <div className="flex items-center gap-2">
             <ChatModelSelector
               model={model}
-              onModelChange={setModel}
+              onModelChange={onModelChange ?? (() => {})}
               onOpenChange={setModelSelectorOpen}
               open={modelSelectorOpen}
             />
-            <PromptInputButton
-              className="rounded-full bg-foreground font-medium text-background"
-              onClick={() => setUseMicrophone(!useMicrophone)}
-              variant="default"
-              disabled={disabled}
-            >
-              <AudioWaveformIcon size={16} />
-              <span className="sr-only">Voice</span>
-            </PromptInputButton>
+            {isLoading ? (
+              <PromptInputButton
+                className="rounded-full bg-destructive font-medium text-destructive-foreground"
+                onClick={onStop}
+                variant="default"
+              >
+                <SquareIcon size={16} />
+                <span className="sr-only">Stop</span>
+              </PromptInputButton>
+            ) : (
+              <PromptInputButton
+                className="rounded-full bg-foreground font-medium text-background"
+                type="submit"
+                variant="default"
+                disabled={disabled || !text.trim()}
+              >
+                <SendIcon size={16} />
+                <span className="sr-only">Send</span>
+              </PromptInputButton>
+            )}
           </div>
         </PromptInputFooter>
       </PromptInput>
