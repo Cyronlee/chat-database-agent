@@ -9,6 +9,7 @@ import {
 } from "ai"
 import type { UIMessage } from "ai"
 import { queryDatabase } from "@/tools/database-query"
+import { SYSTEM_PROMPT } from "@/agent/jira-report-agent"
 
 export const maxDuration = 60
 
@@ -20,16 +21,7 @@ export async function POST(req: Request) {
     execute: async ({ writer }) => {
       const result = streamText({
         model: google("gemini-2.5-flash"),
-        system: `You are a helpful AI assistant specialized in Jira data analysis. You have access to the following tools:
-- queryDatabase: Execute SQL queries against the Jira database to retrieve and analyze data
-
-When a user asks about Jira projects, issues, sprints, users, or any other Jira-related data, use the queryDatabase tool to fetch the relevant information.
-
-Guidelines:
-- Always use SELECT queries only
-- Use JOINs to combine related tables when needed
-- Limit results appropriately to avoid overwhelming responses
-- Format and summarize the query results in a clear, readable way`,
+        system: SYSTEM_PROMPT,
         messages: convertToModelMessages(messages),
         tools: { queryDatabase },
         stopWhen: stepCountIs(5),
@@ -37,7 +29,7 @@ Guidelines:
           google: {
             thinkingConfig: {
               thinkingBudget: 4096,
-              includeThoughts: true,
+              includeThoughts: false,
             },
           } satisfies GoogleGenerativeAIProviderOptions,
         },

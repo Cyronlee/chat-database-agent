@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Play, Loader2 } from "lucide-react"
+import { Play, Loader2, Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import {
@@ -75,6 +75,40 @@ export default function DatabasePage() {
     }
   }
 
+  const handleDownloadCsv = () => {
+    if (!queryResult || queryResult.rowCount === 0) return
+
+    // Escape CSV value (handle quotes and commas)
+    const escapeCsvValue = (value: unknown): string => {
+      if (value === null || value === undefined) return ""
+      const str = String(value)
+      if (str.includes(",") || str.includes('"') || str.includes("\n")) {
+        return `"${str.replace(/"/g, '""')}"`
+      }
+      return str
+    }
+
+    // Build CSV content
+    const headerRow = queryResult.columns.map(escapeCsvValue).join(",")
+    const dataRows = queryResult.rows
+      .map((row) =>
+        queryResult.columns.map((col) => escapeCsvValue(row[col])).join(",")
+      )
+      .join("\n")
+    const csvContent = `${headerRow}\n${dataRows}`
+
+    // Create and trigger download
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement("a")
+    link.href = url
+    link.download = `query-result-${Date.now()}.csv`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <ResizablePanelGroup direction="horizontal" className="h-full">
       {/* Left sidebar - Schema Tree */}
@@ -120,10 +154,22 @@ export default function DatabasePage() {
                   Execute
                 </Button>
                 {queryResult && (
-                  <span className="text-sm text-muted-foreground">
-                    {queryResult.rowCount} row
-                    {queryResult.rowCount !== 1 ? "s" : ""} returned
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm text-muted-foreground">
+                      {queryResult.rowCount} row
+                      {queryResult.rowCount !== 1 ? "s" : ""} returned
+                    </span>
+                    {queryResult.rowCount > 0 && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleDownloadCsv}
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Download CSV
+                      </Button>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
@@ -133,7 +179,7 @@ export default function DatabasePage() {
 
           {/* Query Results */}
           <ResizablePanel defaultSize={70} minSize={20}>
-            <div className="h-full p-4 flex flex-col overflow-hidden">
+            <div className="h-full flex flex-col overflow-hidden">
               {error ? (
                 <div className="bg-destructive/10 border border-destructive/50 rounded-lg p-4 text-destructive text-sm">
                   {error}

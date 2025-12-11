@@ -25,11 +25,20 @@ import {
   ConfirmationActions,
   ConfirmationAction,
 } from "@/components/ai-elements/confirmation"
+import {
+  SqlBlock,
+  extractSqlBlocks,
+  hasSqlBlocks,
+} from "@/components/ai-elements/sql-block"
 import { cn } from "@/lib/utils"
 
 type ChatMessageItemProps = {
   message: UIMessage
-  onToolApproval: (toolCallId: string, toolName: string, approved: boolean) => void
+  onToolApproval: (
+    toolCallId: string,
+    toolName: string,
+    approved: boolean
+  ) => void
   toolsRequiringConfirmation: string[]
 }
 
@@ -41,20 +50,21 @@ export function ChatMessageItem({
   const { role, parts } = message
 
   // Extract reasoning parts
-  const reasoningParts = parts?.filter(
-    (part): part is ReasoningUIPart => part.type === "reasoning"
-  ) || []
+  const reasoningParts =
+    parts?.filter(
+      (part): part is ReasoningUIPart => part.type === "reasoning"
+    ) || []
 
   // Extract tool parts
-  const toolParts = parts?.filter((part): part is ToolUIPart =>
-    isToolUIPart(part)
-  ) || []
+  const toolParts =
+    parts?.filter((part): part is ToolUIPart => isToolUIPart(part)) || []
 
   // Extract text parts
-  const textContent = parts
-    ?.filter((part) => part.type === "text")
-    .map((part) => (part as { type: "text"; text: string }).text)
-    .join("") || ""
+  const textContent =
+    parts
+      ?.filter((part) => part.type === "text")
+      .map((part) => (part as { type: "text"; text: string }).text)
+      .join("") || ""
 
   // Check if reasoning is currently streaming
   const isReasoningStreaming = reasoningParts.some(
@@ -77,10 +87,15 @@ export function ChatMessageItem({
         {/* Tool Invocations */}
         {toolParts.map((toolPart) => {
           const toolName = getToolName(toolPart)
-          const requiresConfirmation = toolsRequiringConfirmation.includes(toolName)
-          const isPendingApproval = requiresConfirmation && toolPart.state === "input-available"
-          const isCompleted = toolPart.state === "output-available" || toolPart.state === "output-error"
-          const wasApproved = requiresConfirmation && isCompleted && toolPart.output !== undefined
+          const requiresConfirmation =
+            toolsRequiringConfirmation.includes(toolName)
+          const isPendingApproval =
+            requiresConfirmation && toolPart.state === "input-available"
+          const isCompleted =
+            toolPart.state === "output-available" ||
+            toolPart.state === "output-error"
+          const wasApproved =
+            requiresConfirmation && isCompleted && toolPart.output !== undefined
 
           return (
             <div key={toolPart.toolCallId} className="space-y-2">
@@ -123,14 +138,18 @@ export function ChatMessageItem({
                   <ConfirmationActions>
                     <ConfirmationAction
                       variant="outline"
-                      onClick={() => onToolApproval(toolPart.toolCallId, toolName, false)}
+                      onClick={() =>
+                        onToolApproval(toolPart.toolCallId, toolName, false)
+                      }
                     >
                       <XIcon className="mr-1 size-4" />
                       Reject
                     </ConfirmationAction>
                     <ConfirmationAction
                       variant="default"
-                      onClick={() => onToolApproval(toolPart.toolCallId, toolName, true)}
+                      onClick={() =>
+                        onToolApproval(toolPart.toolCallId, toolName, true)
+                      }
                     >
                       <CheckIcon className="mr-1 size-4" />
                       Approve
@@ -144,7 +163,9 @@ export function ChatMessageItem({
                 <Confirmation
                   approval={{
                     id: toolPart.toolCallId,
-                    approved: typeof toolPart.output !== "string" || !String(toolPart.output).includes("denied"),
+                    approved:
+                      typeof toolPart.output !== "string" ||
+                      !String(toolPart.output).includes("denied"),
                   }}
                   state={toolPart.state}
                 >
@@ -168,16 +189,70 @@ export function ChatMessageItem({
 
         {/* Text Content */}
         {textContent && (
-                <MessageContent
-                  className={cn(
-                    "group-[.is-user]:rounded-[24px] group-[.is-user]:rounded-br-sm group-[.is-user]:border group-[.is-user]:bg-background group-[.is-user]:text-foreground",
-                    "group-[.is-assistant]:bg-transparent group-[.is-assistant]:p-0 group-[.is-assistant]:text-foreground"
-                  )}
-                >
-            <MessageResponse>{textContent}</MessageResponse>
-                </MessageContent>
+          <TextContentWithSqlBlocks
+            content={textContent}
+            isUser={role === "user"}
+          />
+        )}
+      </div>
+    </Message>
+  )
+}
+
+/**
+ * Component that renders text content and handles SQL blocks
+ */
+function TextContentWithSqlBlocks({
+  content,
+  isUser,
+}: {
+  content: string
+  isUser: boolean
+}) {
+  // For assistant messages, check for SQL blocks
+  if (!hasSqlBlocks(content)) {
+    return (
+      <MessageContent
+        className={cn(
+          "group-[.is-user]:rounded-[24px] group-[.is-user]:rounded-br-sm group-[.is-user]:border group-[.is-user]:bg-background group-[.is-user]:text-foreground",
+          "group-[.is-assistant]:bg-transparent group-[.is-assistant]:p-0 group-[.is-assistant]:text-foreground"
+        )}
+      >
+        <MessageResponse>{content}</MessageResponse>
+      </MessageContent>
+    )
+  }
+
+  // Parse and render content with SQL blocks
+  const { processedContent, sqlBlocks } = extractSqlBlocks(content)
+
+  // Split the processed content by SQL block placeholders
+  const parts = processedContent.split(/__SQL_BLOCK_(\d+)__/)
+
+  return (
+    <div className="flex flex-col gap-2">
+      {parts.map((part, index) => {
+        // Even indices are text content, odd indices are SQL block indices
+        if (index % 2 === 0) {
+          if (!part.trim()) return null
+          return (
+            <MessageContent
+              key={index}
+              className={cn(
+                "group-[.is-user]:rounded-[24px] group-[.is-user]:rounded-br-sm group-[.is-user]:border group-[.is-user]:bg-background group-[.is-user]:text-foreground",
+                "group-[.is-assistant]:bg-transparent group-[.is-assistant]:p-0 group-[.is-assistant]:text-foreground"
               )}
-            </div>
-          </Message>
+            >
+              <MessageResponse>{part}</MessageResponse>
+            </MessageContent>
+          )
+        } else {
+          const sqlIndex = parseInt(part, 10)
+          const sql = sqlBlocks[sqlIndex]
+          if (!sql) return null
+          return <SqlBlock key={index} sql={sql} autoExecute />
+        }
+      })}
+    </div>
   )
 }
