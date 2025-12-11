@@ -25,7 +25,7 @@ export function ChatMessageList({
 }: ChatMessageListProps) {
   return (
     <Conversation className="min-h-0 flex-1">
-      <ConversationContent className="max-w-4xl mx-auto">
+      <ConversationContent className="py-8 max-w-4xl mx-auto">
         {messages.map((message) => (
           <ChatMessageItem
             key={message.id}

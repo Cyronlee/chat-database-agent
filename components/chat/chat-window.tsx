@@ -18,7 +18,7 @@ const APPROVAL = {
 const toolsRequiringConfirmation: string[] = []
 
 export function ChatWindow() {
-  const [isThinkingEnabled, setIsThinkingEnabled] = useState(true)
+  const [isThinkingEnabled, setIsThinkingEnabled] = useState(false)
   const [model, setModel] = useState<string>(models[0].id)
 
   const { messages, sendMessage, status, addToolOutput, setMessages } = useChat(

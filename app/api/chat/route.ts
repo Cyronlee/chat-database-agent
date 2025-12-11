@@ -33,16 +33,14 @@ export async function POST(req: Request) {
         messages: convertToModelMessages(messages),
         tools: { queryDatabase },
         stopWhen: stepCountIs(5),
-        providerOptions: thinking
-          ? {
-              google: {
-                thinkingConfig: {
-                  thinkingBudget: 4096,
-                  includeThoughts: false,
-                },
-              } satisfies GoogleGenerativeAIProviderOptions,
-            }
-          : undefined,
+        providerOptions: {
+          google: {
+            thinkingConfig: {
+              thinkingBudget: 4096,
+              includeThoughts: thinking,
+            },
+          } satisfies GoogleGenerativeAIProviderOptions,
+        },
       })
 
       writer.merge(result.toUIMessageStream({ originalMessages: messages }))
