@@ -1,22 +1,19 @@
 "use client"
 
 import * as React from "react"
-import {
-  MessageCircle,
-  Database,
-  GalleryVerticalEnd,
-  Home,
-  BarChart3,
-} from "lucide-react"
+import { Database, Sparkles, Home, BarChart3 } from "lucide-react"
+import Link from "next/link"
 
 import { NavMain } from "@/components/sidebar/nav-main"
 import { NavUser } from "@/components/sidebar/nav-user"
-import { TeamSwitcher } from "@/components/sidebar/team-switcher"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
 
@@ -27,13 +24,6 @@ const data = {
     email: "m@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
-  teams: [
-    {
-      name: "Jira Report Agent",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-  ],
   navMain: [
     {
       title: "Home",
@@ -41,31 +31,19 @@ const data = {
       icon: Home,
     },
     {
-      title: "Jira Sync",
-      url: "/jira-sync",
-      icon: Database,
+      title: "Agent",
+      url: "/",
+      icon: Sparkles,
     },
     {
       title: "Data Studio",
       url: "/data-studio",
       icon: BarChart3,
     },
-  ],
-  conversations: [
     {
-      name: "Design Engineering",
-      url: "#",
-      icon: MessageCircle,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: MessageCircle,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: MessageCircle,
+      title: "Jira Sync",
+      url: "/jira-sync",
+      icon: Database,
     },
   ],
 }
@@ -74,11 +52,23 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" asChild>
+              <Link href="/">
+                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                  <Sparkles className="size-4" />
+                </div>
+                <span className="truncate text-lg font-semibold">
+                  Jira Report Agent
+                </span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        {/* <NavConversations conversations={data.conversations} /> */}
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

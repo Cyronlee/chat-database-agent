@@ -2,7 +2,7 @@
 
 import { useChat } from "@ai-sdk/react"
 import { DefaultChatTransport } from "ai"
-import { useState, useMemo } from "react"
+import { useState } from "react"
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input"
 import { ChatInput } from "./chat-input"
 import { ChatMessageList } from "./chat-message-list"
@@ -21,21 +21,11 @@ export function ChatWindow() {
   const [isThinkingEnabled, setIsThinkingEnabled] = useState(true)
   const [model, setModel] = useState<string>(models[0].id)
 
-  const transport = useMemo(
-    () =>
-      new DefaultChatTransport({
-        api: "/api/chat",
-        body: {
-          model,
-          thinking: isThinkingEnabled,
-        },
-      }),
-    [model, isThinkingEnabled]
-  )
-
   const { messages, sendMessage, status, addToolOutput, setMessages } = useChat(
     {
-      transport,
+      transport: new DefaultChatTransport({
+        api: "/api/chat",
+      }),
       onError: (error) => {
         toast.error(error.message)
       },
@@ -50,7 +40,15 @@ export function ChatWindow() {
       return
     }
 
-    sendMessage({ text: message.text || "Sent with attachments" })
+    sendMessage(
+      { text: message.text || "Sent with attachments" },
+      {
+        body: {
+          model,
+          thinking: isThinkingEnabled,
+        },
+      }
+    )
   }
 
   const handleToolApproval = async (
@@ -63,7 +61,12 @@ export function ChatWindow() {
       tool: toolName,
       output: approved ? APPROVAL.YES : APPROVAL.NO,
     })
-    sendMessage()
+    sendMessage(undefined, {
+      body: {
+        model,
+        thinking: isThinkingEnabled,
+      },
+    })
   }
 
   const handleClearSession = () => {
