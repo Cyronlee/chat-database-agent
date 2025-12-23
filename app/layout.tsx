@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Jira Report Agent",
-  description: "Jira Report Agent",
+  title: "Database Agent",
+  description: "Database Agent",
 }
 
 export default function RootLayout({

@@ -1,7 +1,14 @@
 "use client"
 
 import * as React from "react"
-import { Database, Sparkles, Home, BarChart3 } from "lucide-react"
+import {
+  Database,
+  Sparkles,
+  BarChart3,
+  Users,
+  LineChart,
+  FileText,
+} from "lucide-react"
 import Link from "next/link"
 
 import { NavMain } from "@/components/sidebar/nav-main"
@@ -16,39 +23,58 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import { getAuthStatus } from "@/api-clients/auth"
+import type { AuthUser } from "@/api-clients/auth"
 
-// This is sample data.
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+const baseNavItems = [
+  {
+    title: "Dashboard",
+    url: "/",
+    icon: BarChart3,
   },
-  navMain: [
-    {
-      title: "Home",
-      url: "/",
-      icon: Home,
-    },
-    {
-      title: "Agent",
-      url: "/",
-      icon: Sparkles,
-    },
-    {
-      title: "Data Studio",
-      url: "/data-studio",
-      icon: BarChart3,
-    },
-    {
-      title: "Jira Sync",
-      url: "/jira-sync",
-      icon: Database,
-    },
-  ],
-}
+  {
+    title: "Agent",
+    url: "/agent",
+    icon: Sparkles,
+  },
+  {
+    title: "Data Studio",
+    url: "/data-studio",
+    icon: BarChart3,
+  },
+  {
+    title: "Custom Charts",
+    url: "/custom-charts",
+    icon: LineChart,
+  },
+]
+
+const adminNavItems = [
+  {
+    title: "User Management",
+    url: "/admin/users",
+    icon: Users,
+  },
+]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const [user, setUser] = React.useState<AuthUser | null>(null)
+  const [authEnabled, setAuthEnabled] = React.useState(false)
+
+  React.useEffect(() => {
+    getAuthStatus().then((status) => {
+      setUser(status.user)
+      setAuthEnabled(status.authEnabled)
+    })
+  }, [])
+
+  const navItems = React.useMemo(() => {
+    if (user?.isAdmin) {
+      return [...baseNavItems, ...adminNavItems]
+    }
+    return baseNavItems
+  }, [user?.isAdmin])
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -60,7 +86,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <Sparkles className="size-4" />
                 </div>
                 <span className="truncate text-lg font-semibold">
-                  Jira Report Agent
+                  Database Agent
                 </span>
               </Link>
             </SidebarMenuButton>
@@ -68,11 +94,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={navItems} />
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={data.user} />
-      </SidebarFooter>
+      <SidebarFooter>{authEnabled && <NavUser user={user} />}</SidebarFooter>
       <SidebarRail />
     </Sidebar>
   )

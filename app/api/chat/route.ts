@@ -9,7 +9,7 @@ import {
 } from "ai"
 import type { UIMessage } from "ai"
 import { queryDatabase } from "@/tools/database-query"
-import { SYSTEM_PROMPT } from "@/agent/jira-report-agent"
+import { SYSTEM_PROMPT } from "@/agent/chat-database-agent"
 
 export const maxDuration = 60
 
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
         system: SYSTEM_PROMPT,
         messages: convertToModelMessages(messages),
         tools: { queryDatabase },
-        stopWhen: stepCountIs(5),
+        stopWhen: stepCountIs(20),
         providerOptions: {
           google: {
             thinkingConfig: {

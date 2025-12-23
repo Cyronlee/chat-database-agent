@@ -2,7 +2,7 @@
 
 import { useChat } from "@ai-sdk/react"
 import { DefaultChatTransport } from "ai"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input"
 import { ChatInput } from "./chat-input"
 import { ChatMessageList } from "./chat-message-list"
@@ -31,6 +31,29 @@ export function ChatWindow() {
       },
     }
   )
+
+  // Show shimmer when waiting for assistant response to start
+  const isWaitingForResponse = useMemo(() => {
+    if (status !== "streaming" && status !== "submitted") {
+      return false
+    }
+    const lastMessage = messages[messages.length - 1]
+    if (!lastMessage) {
+      return false
+    }
+    // Show shimmer if last message is from user
+    if (lastMessage.role === "user") {
+      return true
+    }
+    // Show shimmer if assistant message exists but has no parts yet
+    if (
+      lastMessage.role === "assistant" &&
+      (!lastMessage.parts || lastMessage.parts.length === 0)
+    ) {
+      return true
+    }
+    return false
+  }, [messages, status])
 
   const handleSubmit = (message: PromptInputMessage) => {
     const hasText = Boolean(message.text)
@@ -79,6 +102,7 @@ export function ChatWindow() {
         messages={messages}
         onToolApproval={handleToolApproval}
         toolsRequiringConfirmation={toolsRequiringConfirmation}
+        isWaitingForResponse={isWaitingForResponse}
       />
       <ChatInput
         onSubmit={handleSubmit}

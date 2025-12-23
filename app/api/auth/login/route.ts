@@ -1,11 +1,7 @@
 import { NextResponse } from "next/server"
-import { validateCredentials, createSession, isAuthEnabled } from "@/lib/auth"
+import { validateCredentials, createSession } from "@/lib/auth"
 
 export async function POST(req: Request) {
-  if (!isAuthEnabled()) {
-    return NextResponse.json({ error: "Auth is disabled" }, { status: 400 })
-  }
-
   const { email, password } = await req.json()
 
   if (!email || !password) {
@@ -24,7 +20,8 @@ export async function POST(req: Request) {
     )
   }
 
-  await createSession(user)
+  // Create session with Basic Auth token format
+  await createSession(email, password)
 
   return NextResponse.json({
     success: true,
@@ -35,4 +32,3 @@ export async function POST(req: Request) {
     },
   })
 }
-

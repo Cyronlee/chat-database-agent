@@ -284,9 +284,16 @@ function TextContentWithSqlBlocks({
           )
         } else {
           const sqlIndex = parseInt(part, 10)
-          const sql = sqlBlocks[sqlIndex]
-          if (!sql) return null
-          return <SqlBlock key={index} sql={sql} autoExecute />
+          const sqlBlock = sqlBlocks[sqlIndex]
+          if (!sqlBlock) return null
+          return (
+            <SqlBlock
+              key={index}
+              sql={sqlBlock.sql}
+              chartConfig={sqlBlock.config}
+              autoExecute
+            />
+          )
         }
       })}
     </div>

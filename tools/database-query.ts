@@ -18,7 +18,7 @@ function serializeRow(row: Record<string, unknown>): Record<string, unknown> {
 }
 
 export const queryDatabase = tool({
-  description: `Execute a SQL SELECT query against the Jira database`,
+  description: `Execute a SQL SELECT query against the database`,
   inputSchema: z.object({
     sql: z.string().describe("The SQL SELECT query to execute"),
   }),
