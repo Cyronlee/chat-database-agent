@@ -32,13 +32,15 @@ import {
 } from "@/api-clients/custom-charts"
 import type { CustomChartConfig } from "@/components/chart/types"
 import type { TableSchema } from "@/app/api/database/schema/route"
+import { useDatabaseStore } from "@/stores/database-store"
 
 function DataStudioContent() {
   const searchParams = useSearchParams()
   const chartIdParam = searchParams.get("chartId")
+  const { selectedDatabaseId } = useDatabaseStore()
 
   const [schema, setSchema] = useState<TableSchema[]>([])
-  const [sql, setSql] = useState("SELECT * FROM jira_projects LIMIT 10")
+  const [sql, setSql] = useState("SELECT 1")
   const [isLoading, setIsLoading] = useState(false)
   const [isSchemaLoading, setIsSchemaLoading] = useState(true)
   const [isLoadingChart, setIsLoadingChart] = useState(false)
@@ -75,7 +77,10 @@ function DataStudioContent() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ sql: queryToExecute }),
+          body: JSON.stringify({
+            sql: queryToExecute,
+            databaseId: selectedDatabaseId || undefined,
+          }),
         })
 
         const data = await response.json()
@@ -93,14 +98,18 @@ function DataStudioContent() {
         setIsLoading(false)
       }
     },
-    [setIsLoading, setError, setQueryResult]
+    [selectedDatabaseId]
   )
 
-  // Fetch schema on mount
+  // Fetch schema when database changes
   useEffect(() => {
     async function fetchSchema() {
+      setIsSchemaLoading(true)
       try {
-        const response = await fetch("/api/database/schema")
+        const params = selectedDatabaseId
+          ? `?databaseId=${selectedDatabaseId}`
+          : ""
+        const response = await fetch(`/api/database/schema${params}`)
         const data = await response.json()
         if (data.error) {
           setError(data.error)
@@ -115,7 +124,7 @@ function DataStudioContent() {
       }
     }
     fetchSchema()
-  }, [])
+  }, [selectedDatabaseId])
 
   // Load chart when chartId param changes
   useEffect(() => {

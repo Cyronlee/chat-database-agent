@@ -8,6 +8,7 @@ import { ChatInput } from "./chat-input"
 import { ChatMessageList } from "./chat-message-list"
 import { toast } from "sonner"
 import { models } from "./constants"
+import { useDatabaseStore } from "@/stores/database-store"
 
 const APPROVAL = {
   YES: "Yes, confirmed.",
@@ -20,6 +21,7 @@ const toolsRequiringConfirmation: string[] = []
 export function ChatWindow() {
   const [isThinkingEnabled, setIsThinkingEnabled] = useState(false)
   const [model, setModel] = useState<string>(models[0].id)
+  const { selectedDatabaseId } = useDatabaseStore()
 
   const { messages, sendMessage, status, addToolOutput, setMessages } = useChat(
     {
@@ -69,6 +71,7 @@ export function ChatWindow() {
         body: {
           model,
           thinking: isThinkingEnabled,
+          databaseId: selectedDatabaseId,
         },
       }
     )
@@ -88,6 +91,7 @@ export function ChatWindow() {
       body: {
         model,
         thinking: isThinkingEnabled,
+        databaseId: selectedDatabaseId,
       },
     })
   }

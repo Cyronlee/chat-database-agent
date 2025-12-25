@@ -16,14 +16,17 @@ export function isQueryError(response: QueryResponse): response is QueryError {
   return "error" in response
 }
 
-export async function executeQuery(sql: string): Promise<QueryResponse> {
+export async function executeQuery(
+  sql: string,
+  databaseId?: string | null
+): Promise<QueryResponse> {
   try {
     const response = await fetch("/api/database/query", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ sql }),
+      body: JSON.stringify({ sql, databaseId: databaseId || undefined }),
     })
 
     const data = await response.json()
@@ -38,5 +41,11 @@ export async function executeQuery(sql: string): Promise<QueryResponse> {
       error: error instanceof Error ? error.message : "Failed to execute query",
     }
   }
+}
+
+export async function fetchSchema(databaseId?: string | null) {
+  const params = databaseId ? `?databaseId=${databaseId}` : ""
+  const response = await fetch(`/api/database/schema${params}`)
+  return response.json()
 }
 

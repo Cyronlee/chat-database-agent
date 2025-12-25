@@ -42,6 +42,21 @@ alwaysApply: true
 - Use `@/` prefix for internal imports
 - Use `import type` for type-only imports
 
+## Use SWR to fetch data
+
+```ts
+import useSWR, { mutate } from "swr"
+import { getUserInfo, getUserInfoKey } from "@/clients/user/get-user-info"
+
+// In component
+const { data, error, isLoading } = useSWR(
+  getUserInfoKey(id),
+  () => getUserInfo(id)
+  // DO NOT add custom options, already added in the global config
+)
+// Refresh in other places: mutate(getUserInfoKey(id))
+```
+
 ## Quality Standards
 
 - Ensure `bun run build` pass after any changes

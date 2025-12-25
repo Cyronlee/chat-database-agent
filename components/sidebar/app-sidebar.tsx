@@ -1,16 +1,9 @@
 "use client"
 
 import * as React from "react"
-import {
-  Database,
-  Sparkles,
-  BarChart3,
-  Users,
-  LineChart,
-  FileText,
-} from "lucide-react"
-import Link from "next/link"
+import { Database, Sparkles, BarChart3, Users, LineChart } from "lucide-react"
 
+import { DatabaseSwitcher } from "@/components/sidebar/database-switcher"
 import { NavMain } from "@/components/sidebar/nav-main"
 import { NavUser } from "@/components/sidebar/nav-user"
 import {
@@ -18,9 +11,6 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { getAuthStatus } from "@/api-clients/auth"
@@ -46,6 +36,11 @@ const baseNavItems = [
     title: "Custom Charts",
     url: "/custom-charts",
     icon: LineChart,
+  },
+  {
+    title: "Databases",
+    url: "/databases",
+    icon: Database,
   },
 ]
 
@@ -78,20 +73,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <Link href="/">
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <Sparkles className="size-4" />
-                </div>
-                <span className="truncate text-lg font-semibold">
-                  Database Agent
-                </span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <DatabaseSwitcher />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={navItems} />
