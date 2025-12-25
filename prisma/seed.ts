@@ -7,34 +7,63 @@ async function main() {
   console.log("Starting seed...")
 
   // Check if admin user already exists
-  const existingAdmin = await prisma.users.findUnique({
+  let admin = await prisma.users.findUnique({
     where: { email: "admin@example.com" },
   })
 
-  if (existingAdmin) {
-    console.log("Admin user already exists, skipping...")
-    return
+  if (admin) {
+    console.log("Admin user already exists, skipping user creation...")
+  } else {
+    // Hash the password
+    const hashedPassword = await bcrypt.hash("123456", 10)
+
+    // Create admin user
+    admin = await prisma.users.create({
+      data: {
+        name: "admin",
+        email: "admin@example.com",
+        password: hashedPassword,
+        is_admin: true,
+      },
+    })
+
+    console.log("Created admin user:", {
+      id: admin.id,
+      name: admin.name,
+      email: admin.email,
+      is_admin: admin.is_admin,
+    })
   }
 
-  // Hash the password
-  const hashedPassword = await bcrypt.hash("123456", 10)
-
-  // Create admin user
-  const admin = await prisma.users.create({
-    data: {
-      name: "admin",
-      email: "admin@example.com",
-      password: hashedPassword,
-      is_admin: true,
-    },
+  // Add Northwind database connection
+  const existingNorthwind = await prisma.external_databases.findFirst({
+    where: { name: "Northwind" },
   })
 
-  console.log("Created admin user:", {
-    id: admin.id,
-    name: admin.name,
-    email: admin.email,
-    is_admin: admin.is_admin,
-  })
+  if (existingNorthwind) {
+    console.log("Northwind database already exists, skipping...")
+  } else {
+    const northwindDb = await prisma.external_databases.create({
+      data: {
+        name: "Northwind",
+        host: "localhost",
+        port: 5434,
+        database: "northwind",
+        username: "postgres",
+        password: "postgres",
+        ssl_enabled: false,
+        created_by: admin.id,
+      },
+    })
+
+    console.log("Created Northwind database connection:", {
+      id: northwindDb.id,
+      name: northwindDb.name,
+      host: northwindDb.host,
+      port: northwindDb.port,
+      database: northwindDb.database,
+    })
+  }
 
   console.log("Seed completed successfully!")
 }
