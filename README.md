@@ -1,6 +1,28 @@
 # Chat Database Agent
 
+[中文版](./README.zh.md)
+
 A Next.js application for interacting with databases using natural language. Built with AI capabilities to help users query and visualize data.
+
+## Features
+
+### 🤖 AI Agent Chat
+
+Chat with your database using natural language queries powered by AI.
+
+![AI Agent](./public/img/agent.png)
+
+### 📊 Interactive Dashboards
+
+Create and customize dashboards with various chart types to visualize your data.
+
+![Dashboard](./public/img/dashboard.png)
+
+### 🔍 Data Studio
+
+Explore your database schema and write SQL queries with visual query results.
+
+![Data Studio](./public/img/data-studio.png)
 
 ## Tech Stack
 
@@ -40,7 +62,7 @@ After startup, you can login with:
 - **Email**: admin@example.com
 - **Password**: 123456
 
-The Northwind sample database will be automatically added as an external database connection.
+The Northwind sample database will be automatically added as an external database connection.ssss
 
 ## Manual Setup
 
