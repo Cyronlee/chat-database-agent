@@ -19,8 +19,6 @@ CREATE TABLE "custom_charts" (
     "chart_config" JSONB NOT NULL,
     "created_by" BIGINT,
     "database_id" BIGINT,
-    "show_on_dashboard" BOOLEAN NOT NULL DEFAULT false,
-    "display_order" INTEGER,
     "row_created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "row_updated_at" TIMESTAMPTZ(6),
 
