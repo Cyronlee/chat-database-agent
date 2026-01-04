@@ -3,6 +3,7 @@ import type { CustomChartConfig } from "@/components/chart/types"
 export interface CustomChart {
   id: string
   name: string
+  databaseId: string | null
   createdAt: string | null
   updatedAt: string | null
   creator: {
@@ -59,14 +60,15 @@ export async function getCustomChart(
 export async function createCustomChart(
   name: string,
   sql: string,
-  chartConfig: CustomChartConfig
+  chartConfig: CustomChartConfig,
+  databaseId: string | null
 ): Promise<CustomChartCreateResponse> {
   const response = await fetch("/api/custom-charts", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ name, sql, chartConfig }),
+    body: JSON.stringify({ name, sql, chartConfig, databaseId }),
   })
   return response.json()
 }
@@ -84,14 +86,15 @@ export async function updateCustomChart(
   id: string,
   name: string,
   sql: string,
-  chartConfig: CustomChartConfig
+  chartConfig: CustomChartConfig,
+  databaseId: string | null
 ): Promise<CustomChartUpdateResponse> {
   const response = await fetch(`/api/custom-charts/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ name, sql, chartConfig }),
+    body: JSON.stringify({ name, sql, chartConfig, databaseId }),
   })
   return response.json()
 }

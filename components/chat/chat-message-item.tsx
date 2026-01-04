@@ -40,12 +40,14 @@ type ChatMessageItemProps = {
     approved: boolean
   ) => void
   toolsRequiringConfirmation: string[]
+  databaseId?: string | null
 }
 
 export function ChatMessageItem({
   message,
   onToolApproval,
   toolsRequiringConfirmation,
+  databaseId,
 }: ChatMessageItemProps) {
   const { role, parts } = message
 
@@ -225,6 +227,7 @@ export function ChatMessageItem({
                 key={`text-${textPart.index}`}
                 content={textPart.text}
                 isUser={role === "user"}
+                databaseId={databaseId}
               />
             )
           }
@@ -241,9 +244,11 @@ export function ChatMessageItem({
  */
 function TextContentWithSqlBlocks({
   content,
+  databaseId,
 }: {
   content: string
   isUser: boolean
+  databaseId?: string | null
 }) {
   // For assistant messages, check for SQL blocks
   if (!hasSqlBlocks(content)) {
@@ -291,6 +296,7 @@ function TextContentWithSqlBlocks({
               key={index}
               sql={sqlBlock.sql}
               chartConfig={sqlBlock.config}
+              databaseId={databaseId}
               autoExecute
             />
           )

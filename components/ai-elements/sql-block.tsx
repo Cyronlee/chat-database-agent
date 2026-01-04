@@ -40,6 +40,7 @@ interface SqlBlockProps {
   sql: string
   autoExecute?: boolean
   chartConfig?: CustomChartConfig
+  databaseId?: string | null
 }
 
 type QueryState = "idle" | "loading" | "success" | "error"
@@ -48,6 +49,7 @@ export function SqlBlock({
   sql,
   autoExecute = true,
   chartConfig,
+  databaseId,
 }: SqlBlockProps) {
   const [queryState, setQueryState] = useState<QueryState>("idle")
   const [result, setResult] = useState<QueryResult | null>(null)
@@ -67,7 +69,7 @@ export function SqlBlock({
     setQueryState("loading")
     setError(null)
 
-    const response = await executeQuery(trimmedSql)
+    const response = await executeQuery(trimmedSql, databaseId)
 
     if (isQueryError(response)) {
       setQueryState("error")
@@ -76,7 +78,7 @@ export function SqlBlock({
       setQueryState("success")
       setResult(response)
     }
-  }, [trimmedSql])
+  }, [trimmedSql, databaseId])
 
   // Auto-execute on mount if enabled
   useEffect(() => {
@@ -255,7 +257,7 @@ export function SqlBlock({
         result &&
         result.rowCount > 0 &&
         chartConfig && (
-          <SaveChartButton sql={trimmedSql} chartConfig={chartConfig} />
+          <SaveChartButton sql={trimmedSql} chartConfig={chartConfig} databaseId={databaseId ?? null} />
         )}
       {showExpandButton &&
         queryState === "success" &&
@@ -429,6 +431,7 @@ export function SqlBlock({
                     <SaveChartButton
                       sql={trimmedSql}
                       chartConfig={chartConfig}
+                      databaseId={databaseId ?? null}
                     />
                   )}
                 <Button

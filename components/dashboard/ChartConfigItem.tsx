@@ -63,13 +63,13 @@ export function ChartConfigItem({
             state="off"
             className="w-1/2 text-xs text-muted-foreground peer-data-[state=checked]:text-foreground"
           >
-            Half
+            Full
           </SwitchIndicator>
           <SwitchIndicator
             state="on"
             className="w-1/2 text-xs text-muted-foreground peer-data-[state=unchecked]:text-foreground"
           >
-            Full
+            Half
           </SwitchIndicator>
         </SwitchWrapper>
       )}

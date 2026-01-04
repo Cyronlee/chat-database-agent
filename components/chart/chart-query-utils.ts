@@ -14,12 +14,15 @@ export interface QueryExecutionResult {
   error: string | null
 }
 
-export async function runChartQuery(sql: string): Promise<QueryExecutionResult> {
+export async function runChartQuery(
+  sql: string,
+  databaseId?: string | null
+): Promise<QueryExecutionResult> {
   if (!sql.trim()) {
     return { state: "idle", result: null, error: null }
   }
 
-  const response = await executeQuery(sql.trim())
+  const response = await executeQuery(sql.trim(), databaseId)
 
   if (isQueryError(response)) {
     return { state: "error", result: null, error: response.error }

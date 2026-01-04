@@ -107,6 +107,7 @@ export function ChatWindow() {
         onToolApproval={handleToolApproval}
         toolsRequiringConfirmation={toolsRequiringConfirmation}
         isWaitingForResponse={isWaitingForResponse}
+        databaseId={selectedDatabaseId}
       />
       <ChatInput
         onSubmit={handleSubmit}

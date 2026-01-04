@@ -37,7 +37,7 @@ import { useDatabaseStore } from "@/stores/database-store"
 function DataStudioContent() {
   const searchParams = useSearchParams()
   const chartIdParam = searchParams.get("chartId")
-  const { selectedDatabaseId } = useDatabaseStore()
+  const { selectedDatabaseId, setSelectedDatabase } = useDatabaseStore()
 
   const [schema, setSchema] = useState<TableSchema[]>([])
   const [sql, setSql] = useState("SELECT 1")
@@ -146,8 +146,8 @@ function DataStudioContent() {
           setActiveTab("chart")
           loadedChartIdRef.current = chartIdParam
 
-          // Auto-execute the query
-          await executeQuery(chart.sql)
+          // Switch to the chart's database
+          setSelectedDatabase(chart.databaseId)
         }
       } catch (err) {
         setError("Failed to load chart")
@@ -157,7 +157,7 @@ function DataStudioContent() {
       }
     }
     loadChart(chartIdParam)
-  }, [chartIdParam, executeQuery])
+  }, [chartIdParam, setSelectedDatabase])
 
   // Auto-initialize chart config when switching to chart tab (if not already initialized)
   useEffect(() => {
@@ -230,7 +230,8 @@ function DataStudioContent() {
       const result = await createCustomChart(
         chartName.trim(),
         sql.trim(),
-        chartConfig
+        chartConfig,
+        selectedDatabaseId
       )
       if (result.error) {
         setSaveError(result.error)
@@ -265,7 +266,8 @@ function DataStudioContent() {
         chartIdParam,
         updateChartName.trim(),
         sql.trim(),
-        chartConfig
+        chartConfig,
+        selectedDatabaseId
       )
       if (result.error) {
         setUpdateError(result.error)

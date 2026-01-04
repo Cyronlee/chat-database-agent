@@ -57,6 +57,7 @@ export async function GET(
       name: true,
       sql: true,
       chart_config: true,
+      database_id: true,
     },
   })
 
@@ -73,6 +74,7 @@ export async function GET(
         name: chart.name,
         sql: chart.sql,
         chartConfig: chart.chart_config,
+        databaseId: chart.database_id?.toString() ?? null,
         width: item.width,
       }
     })

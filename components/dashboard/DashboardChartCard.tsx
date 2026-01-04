@@ -33,12 +33,14 @@ interface DashboardChartCardProps {
   name: string
   sql: string
   chartConfig: CustomChartConfig
+  databaseId?: string | null
 }
 
 export function DashboardChartCard({
   name,
   sql,
   chartConfig,
+  databaseId,
 }: DashboardChartCardProps) {
   const [queryState, setQueryState] = useState<QueryState>("idle")
   const [result, setResult] = useState<QueryResult | null>(null)
@@ -53,11 +55,11 @@ export function DashboardChartCard({
     setQueryState("loading")
     setError(null)
 
-    const response = await runChartQuery(sql)
+    const response = await runChartQuery(sql, databaseId)
     setQueryState(response.state)
     setResult(response.result)
     setError(response.error)
-  }, [sql])
+  }, [sql, databaseId])
 
   // Auto-execute on mount
   useEffect(() => {

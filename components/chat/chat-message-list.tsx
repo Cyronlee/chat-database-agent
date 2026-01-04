@@ -19,6 +19,7 @@ type ChatMessageListProps = {
   ) => void
   toolsRequiringConfirmation: string[]
   isWaitingForResponse?: boolean
+  databaseId?: string | null
 }
 
 export function ChatMessageList({
@@ -26,6 +27,7 @@ export function ChatMessageList({
   onToolApproval,
   toolsRequiringConfirmation,
   isWaitingForResponse = false,
+  databaseId,
 }: ChatMessageListProps) {
   return (
     <Conversation className="min-h-0 flex-1">
@@ -36,6 +38,7 @@ export function ChatMessageList({
             message={message}
             onToolApproval={onToolApproval}
             toolsRequiringConfirmation={toolsRequiringConfirmation}
+            databaseId={databaseId}
           />
         ))}
         {isWaitingForResponse && (

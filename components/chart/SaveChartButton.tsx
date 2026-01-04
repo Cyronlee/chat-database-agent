@@ -18,12 +18,14 @@ import type { CustomChartConfig } from "@/components/chart/types"
 interface SaveChartButtonProps {
   sql: string
   chartConfig: CustomChartConfig
+  databaseId: string | null
   disabled?: boolean
 }
 
 export function SaveChartButton({
   sql,
   chartConfig,
+  databaseId,
   disabled = false,
 }: SaveChartButtonProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -41,7 +43,8 @@ export function SaveChartButton({
       const result = await createCustomChart(
         chartName.trim(),
         sql.trim(),
-        chartConfig
+        chartConfig,
+        databaseId
       )
       if (result.error) {
         setError(result.error)

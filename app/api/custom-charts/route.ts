@@ -24,6 +24,7 @@ export async function GET() {
     select: {
       id: true,
       name: true,
+      database_id: true,
       row_created_at: true,
       row_updated_at: true,
       creator: {
@@ -43,6 +44,7 @@ export async function GET() {
     charts: charts.map((chart) => ({
       id: chart.id.toString(),
       name: chart.name,
+      databaseId: chart.database_id?.toString() ?? null,
       createdAt: chart.row_created_at?.toISOString() ?? null,
       updatedAt: chart.row_updated_at?.toISOString() ?? null,
       creator: chart.creator
@@ -65,7 +67,7 @@ export async function POST(req: Request) {
     )
   }
 
-  const { name, sql, chartConfig } = await req.json()
+  const { name, sql, chartConfig, databaseId } = await req.json()
 
   if (!name || !sql || !chartConfig) {
     return NextResponse.json(
@@ -80,6 +82,7 @@ export async function POST(req: Request) {
       sql,
       chart_config: chartConfig,
       created_by: validation.session.id,
+      database_id: databaseId ? parseInt(databaseId) : null,
       row_updated_at: new Date(),
     },
     include: {
@@ -100,6 +103,7 @@ export async function POST(req: Request) {
       name: chart.name,
       sql: chart.sql,
       chartConfig: chart.chart_config,
+      databaseId: chart.database_id?.toString() ?? null,
       createdAt: chart.row_created_at?.toISOString() ?? null,
       updatedAt: chart.row_updated_at?.toISOString() ?? null,
       creator: chart.creator

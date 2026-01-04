@@ -48,6 +48,7 @@ export async function GET(
       name: chart.name,
       sql: chart.sql,
       chartConfig: chart.chart_config,
+      databaseId: chart.database_id?.toString() ?? null,
       createdAt: chart.row_created_at?.toISOString() ?? null,
       updatedAt: chart.row_updated_at?.toISOString() ?? null,
       creator: chart.creator
@@ -75,7 +76,7 @@ export async function PUT(
 
   const { id } = await params
   const body = await req.json()
-  const { name, sql, chartConfig } = body
+  const { name, sql, chartConfig, databaseId } = body
 
   if (!name || !sql || !chartConfig) {
     return NextResponse.json(
@@ -90,6 +91,7 @@ export async function PUT(
       name,
       sql,
       chart_config: chartConfig,
+      database_id: databaseId ? parseInt(databaseId) : null,
     },
     include: {
       creator: {
@@ -109,6 +111,7 @@ export async function PUT(
       name: updatedChart.name,
       sql: updatedChart.sql,
       chartConfig: updatedChart.chart_config,
+      databaseId: updatedChart.database_id?.toString() ?? null,
       createdAt: updatedChart.row_created_at?.toISOString() ?? null,
       updatedAt: updatedChart.row_updated_at?.toISOString() ?? null,
       creator: updatedChart.creator

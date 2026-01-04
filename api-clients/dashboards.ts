@@ -28,6 +28,7 @@ export interface DashboardChart {
   name: string
   sql: string
   chartConfig: CustomChartConfig
+  databaseId: string | null
   width: ChartWidth
 }
 

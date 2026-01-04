@@ -211,6 +211,7 @@ export default function DashboardDetailPage() {
                   name={chart.name}
                   sql={chart.sql}
                   chartConfig={chart.chartConfig as CustomChartConfig}
+                  databaseId={chart.databaseId}
                 />
               </div>
             ))}
@@ -230,13 +231,16 @@ export default function DashboardDetailPage() {
       />
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Dashboard</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete &ldquo;{dashboard.name}&rdquo;? This action
-              cannot be undone.
+              Are you sure you want to delete &ldquo;{dashboard.name}&rdquo;?
+              This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -246,7 +250,9 @@ export default function DashboardDetailPage() {
               disabled={isDeleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isDeleting && <Loader2Icon className="mr-2 size-4 animate-spin" />}
+              {isDeleting && (
+                <Loader2Icon className="mr-2 size-4 animate-spin" />
+              )}
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -255,4 +261,3 @@ export default function DashboardDetailPage() {
     </div>
   )
 }
-

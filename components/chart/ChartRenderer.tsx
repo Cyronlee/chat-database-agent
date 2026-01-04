@@ -256,10 +256,7 @@ function PieChartRenderer({
   const labelField = config.label.field
 
   return (
-    <ChartContainer
-      config={shadcnConfig}
-      className="[&_.recharts-pie-label-text]:fill-foreground mx-auto aspect-square h-full max-h-[300px]"
-    >
+    <ChartContainer config={shadcnConfig} className="h-full w-full">
       <PieChart>
         <ChartTooltip content={<ChartTooltipContent hideLabel />} />
         <Pie
@@ -268,6 +265,7 @@ function PieChartRenderer({
           label
           nameKey={labelField}
         />
+        <ChartLegend content={<ChartLegendContent />} />
       </PieChart>
     </ChartContainer>
   )

@@ -264,7 +264,7 @@ export function preparePieChartData(
     const name = String(item[labelField] || `item-${index}`)
     return {
       ...item,
-      fill: `var(--color-${name})`,
+      fill: CHART_COLORS[index % CHART_COLORS.length],
     }
   })
 }
