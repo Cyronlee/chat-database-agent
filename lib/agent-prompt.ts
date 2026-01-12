@@ -89,7 +89,7 @@ GROUP BY category
   "series": [
     { "field": "value_column", "label": "Series Label", "color": "#hex (optional)" }
   ],
-  "groupBy": {  // Optional: for pivoting long-format data
+  "groupBy": {  // Optional: for multiple series in a single chart
     "field": "group_column",
     "valueField": "value_column"
   }
@@ -123,4 +123,3 @@ export function buildSystemPrompt(schema: TableSchema[]): string {
 
 ${schemaMarkdown}`
 }
-
